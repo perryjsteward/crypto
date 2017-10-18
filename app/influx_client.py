@@ -1,5 +1,4 @@
 import os
-import requests
 from os.path import join, dirname
 from dotenv import load_dotenv
 import influxdb
@@ -20,7 +19,7 @@ Attributes:
     user: what user information needs
     password: users password
 """
-class InfluxDb(object):
+class InfluxClient(object):
 
     def __init__(self):
         self._host = os.environ['INFLUX_HOST']
@@ -30,33 +29,39 @@ class InfluxDb(object):
         self._read_passwd = os.environ['INFLUX_READ_PASSWD']
         self._write_user = os.environ['INFLUX_WRITE_USER']
         self._write_passwd = os.environ['INFLUX_WRITE_PASSWD']
+        self._read_client = None
+        self._write_client = None
 
     # private methods for internal read client creation
-    def _read_client(self):
-        return influxdb.InfluxDBClient(self._host, self._port, self._read_user, self._read_passwd)
+    def read_client(self):
+        if not self._read_client:
+            self._read_client = influxdb.InfluxDBClient(self._host, self._port, self._read_user, self._read_passwd, self._db)
+        return self._read_client
 
     # private methods for internal write client creation
-    def _write_client(self):
-        return InfluxDBClient(self._host, self._port, self._write_user, self._write_passwd, self._db)
+    def write_client(self):
+        if not self._write_client:
+            self._write_client =  influxdb.InfluxDBClient(self._host, self._port, self._write_user, self._write_passwd, self._db)
+        return self._write_client
 
     # public method for displaying current influx config
     def get_connection_details(self):
         return {
             "host" : self._host,
             "port" : self._port,
-            "db" : self._read_user
+            "db" : self._db
         }
 
     # Generic public query method
     def query(self, query):
-        print self._read_client().query(query)
+        print self.read_client().query(query)
 
     # Generic public write method
     def write(self):
-        return self._write_client().query(query)
+        return self.write_client().query(query)
 
+# run the file for a small test!
 if __name__ == '__main__':
-    print("Running Influx()")
-    client = InfluxDb()
-
-    print client.query("SHOW DATABASES")
+    print("Running InfluxClient()")
+    client = InfluxClient()
+    print client.get_connection_details()
