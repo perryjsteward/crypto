@@ -15,21 +15,15 @@ gdax = GdaxClient()
 A Python script for managing scheduled tasks for the cryto tracking application
 """
 
-@sched.scheduled_job('interval', id='my_job_id', seconds=5)
+# @sched.scheduled_job('interval', id='update_btc_candles', hours=2)
 def update_btc_candles():
-    try:
-        data = gdax.get_btc_candles()
-        influx.write_coin_candles(data)
-    except:
-        print "Error updating Bitcoin candles"
+    data = gdax.get_btc_candles()
+    influx.write_btc_candles(data)
 
 
-@sched.scheduled_job('interval', id='my_job_id', seconds=2)
-def update_btc_ticker():
-    try:
-        data = gdax.get_btc_ticker()
-        influx.write_coin_ticker(data)
-    except:
-        print "Error updating Bitcoin ticker"
+# @sched.scheduled_job('interval', id='update_btc_ticker', minutes=1)
+# def update_btc_ticker():
+#     data = gdax.get_btc_ticker()
+#     influx.write_btc_ticker(data)
 
 sched.start()

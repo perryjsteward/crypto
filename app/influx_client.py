@@ -2,6 +2,10 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 import influxdb
+from datetime import datetime, tzinfo
+import time
+import pytz
+import json
 # import config # uncomment if using config file vs below import method
 
 # import environment variables - comment out if using config file
@@ -31,6 +35,7 @@ class InfluxClient(object):
         self._write_passwd = os.environ['INFLUX_WRITE_PASSWD']
         self._read_client = None
         self._write_client = None
+        self._logger = open("write_errors.log", "w")
 
     # private methods for internal read client creation
     def read_client(self):
@@ -52,19 +57,45 @@ class InfluxClient(object):
             "db" : self._db
         }
 
-    def write_coin_ticker(self, data):
-        print data
+    def write_btc_ticker(self,data):
+        measurement = "market_data"
+        time = data['time']
+        tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
+        fields = dict(close=float(data['price']),ticker=True)
 
-    def write_coin_candles(self, data):
-        print data
+        data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
+        self.write(data)
+
+    def write_btc_candles(self,data):
+        for candle in data:
+            created = candle[0]
+            dt = datetime.utcfromtimestamp(created)
+
+            measurement = "market_data"
+            time = dt
+            tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
+
+            fields = dict(
+                low=float(candle[1]),
+                high=float(candle[2]),
+                open=float(candle[3]),
+                close=float(candle[4]),
+                volume=float(candle[5]),
+                ticker=False
+            )
+
+            data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
+            self.write(data)
 
     # Generic public query method
     def query(self, query):
         print self.read_client().query(query)
 
+
     # Generic public write method
-    def write(self):
-        return self.write_client().query(query)
+    def write(self, data):
+        return self.write_client().write_points(data)
+
 
 # run the file for a small test!
 if __name__ == '__main__':
