@@ -52,6 +52,12 @@ class InfluxClient(object):
             "db" : self._db
         }
 
+    def write_coin_ticker(self, data):
+        print data
+
+    def write_coin_candles(self, data):
+        print data
+
     # Generic public query method
     def query(self, query):
         print self.read_client().query(query)
@@ -63,5 +69,5 @@ class InfluxClient(object):
 # run the file for a small test!
 if __name__ == '__main__':
     print("Running InfluxClient()")
-    client = InfluxClient()
-    print client.get_connection_details()
+    influx = InfluxClient()
+    print influx.get_connection_details()

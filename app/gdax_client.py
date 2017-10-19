@@ -50,5 +50,5 @@ class GdaxClient(object):
 # run the file for a small test!
 if __name__ == '__main__':
     print("Running GdaxClient()")
-    client = GdaxClient()
-    print client.get_connection_details()
+    gdax = GdaxClient()
+    print gdax.get_btc_ticker()

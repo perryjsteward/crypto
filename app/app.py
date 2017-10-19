@@ -1,5 +1,6 @@
 from flask import Flask
 import time
+import crypto_tasks
 
 app = Flask(__name__)
 
