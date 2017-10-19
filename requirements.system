@@ -1,0 +1,3 @@
+python-virtualenv
+python-pip
+libapache2-mod-wsgi
