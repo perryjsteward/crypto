@@ -21,9 +21,9 @@ def update_btc_candles():
     influx.write_btc_candles(data)
 
 
-# @sched.scheduled_job('interval', id='update_btc_ticker', minutes=1)
-# def update_btc_ticker():
-#     data = gdax.get_btc_ticker()
-#     influx.write_btc_ticker(data)
+@sched.scheduled_job('interval', id='update_btc_ticker', minutes=1)
+def update_btc_ticker():
+    data = gdax.get_btc_ticker()
+    influx.write_btc_ticker(data)
 
 sched.start()
