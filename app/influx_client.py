@@ -69,7 +69,7 @@ class InfluxClient(object):
         measurement = "market_data"
         time = data['time']
         tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
-        fields = dict(close=float(data['price']))
+        fields = dict(close=float(data['price']), ticker=True)
 
         data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
         self.write(data)
@@ -89,6 +89,7 @@ class InfluxClient(object):
                 open=float(candle[3]),
                 close=float(candle[4]),
                 volume=float(candle[5])
+                ticker=False
             )
 
             data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
