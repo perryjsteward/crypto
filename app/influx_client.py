@@ -75,14 +75,13 @@ class InfluxClient(object):
         data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
         self.write(data)
 
-    def write_btc_candles(self,data):
+    def write_btc_candles(self,data, tracker_type='candle'):
         for candle in data:
             created = candle[0]
             dt = datetime.utcfromtimestamp(created)
 
             measurement = "market_data"
             time = dt
-            tracker_type = 'candle'
             tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
 
             fields = dict(
