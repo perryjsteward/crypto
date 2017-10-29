@@ -49,6 +49,14 @@ class InfluxClient(object):
             self._write_client =  influxdb.InfluxDBClient(self._host, self._port, self._write_user, self._write_passwd, self._db)
         return self._write_client
 
+    # Generic public query method
+    def query(self, query):
+        print self.read_client().query(query)
+
+    # Generic public write method
+    def write(self, data):
+        return self.write_client().write_points(data)
+
     # public method for displaying current influx config
     def get_connection_details(self):
         return {
@@ -60,8 +68,9 @@ class InfluxClient(object):
     def write_btc_ticker(self,data):
         measurement = "market_data"
         time = data['time']
+        tracker_type = 'ticker'
         tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
-        fields = dict(close=float(data['price']),ticker=True)
+        fields = dict(close=float(data['price']),tracker_type=tracker_type)
 
         data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
         self.write(data)
@@ -73,6 +82,7 @@ class InfluxClient(object):
 
             measurement = "market_data"
             time = dt
+            tracker_type = 'candle'
             tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
 
             fields = dict(
@@ -81,24 +91,37 @@ class InfluxClient(object):
                 open=float(candle[3]),
                 close=float(candle[4]),
                 volume=float(candle[5]),
-                ticker=False
+                tracker_type=tracker_type
             )
 
             data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
             self.write(data)
 
-    # Generic public query method
-    def query(self, query):
-        print self.read_client().query(query)
+    def write_btc_history(self,data):
+        for candle in data:
+            created = candle[0]
+            dt = datetime.utcfromtimestamp(created)
 
+            measurement = "market_data"
+            time = dt
+            tracker_type = 'history'
+            tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
 
-    # Generic public write method
-    def write(self, data):
-        return self.write_client().write_points(data)
+            fields = dict(
+                low=float(candle[1]),
+                high=float(candle[2]),
+                open=float(candle[3]),
+                close=float(candle[4]),
+                volume=float(candle[5]),
+                tracker_type=tracker_type
+            )
 
+            data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
+            self.write(data)
 
 # run the file for a small test!
 if __name__ == '__main__':
     print("Running InfluxClient()")
+
     influx = InfluxClient()
     print influx.get_connection_details()

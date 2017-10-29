@@ -42,13 +42,14 @@ class GdaxClient(object):
         return r.json()
 
     # Returns historical data for Bitcoin - default is 200 data points, 1 per minute
-    def get_btc_candles(self):
+    def get_btc_candles(self, params=None):
         url = "{}/products/BTC-GBP/candles".format(self._api_base)
-        r = requests.get(url=url)
+        r = requests.get(url=url, params=params)
         return r.json()
 
 # run the file for a small test!
 if __name__ == '__main__':
     print("Running GdaxClient()")
+
     gdax = GdaxClient()
     print gdax.get_btc_ticker()
