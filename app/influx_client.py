@@ -68,14 +68,13 @@ class InfluxClient(object):
     def write_btc_ticker(self,data):
         measurement = "market_data"
         time = data['time']
-        tracker_type = 'ticker'
         tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
-        fields = dict(close=float(data['price']),tracker_type=tracker_type)
+        fields = dict(close=float(data['price']))
 
         data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
         self.write(data)
 
-    def write_btc_candles(self,data, tracker_type='candle'):
+    def write_btc_candles(self,data):
         for candle in data:
             created = candle[0]
             dt = datetime.utcfromtimestamp(created)
@@ -89,30 +88,7 @@ class InfluxClient(object):
                 high=float(candle[2]),
                 open=float(candle[3]),
                 close=float(candle[4]),
-                volume=float(candle[5]),
-                tracker_type=tracker_type
-            )
-
-            data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]
-            self.write(data)
-
-    def write_btc_history(self,data):
-        for candle in data:
-            created = candle[0]
-            dt = datetime.utcfromtimestamp(created)
-
-            measurement = "market_data"
-            time = dt
-            tracker_type = 'history'
-            tags = dict(coin="BTC", currency="GBP", exchange="GDAX")
-
-            fields = dict(
-                low=float(candle[1]),
-                high=float(candle[2]),
-                open=float(candle[3]),
-                close=float(candle[4]),
-                volume=float(candle[5]),
-                tracker_type=tracker_type
+                volume=float(candle[5])
             )
 
             data = [dict(measurement=measurement, tags=tags, time=time, fields=fields)]

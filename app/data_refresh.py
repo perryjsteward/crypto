@@ -62,7 +62,7 @@ class DataRefresh(object):
     def _update_historic_data(self, data):
         try:
             print self._start
-            self._influx.write_btc_history(data)
+            self._influx.write_btc_candles(data)
             self._update_dates(data)
         except:
             print("Error pushing to Influx")
